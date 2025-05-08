@@ -1,0 +1,6 @@
+﻿services:
+  graphbackend:
+    image: graphbackend
+    build:
+      context: .
+      dockerfile: GraphBackend/Dockerfile
