@@ -1,0 +1,1 @@
+dotnet ef --startup-project ..\GraphBackend.Presentation\ database update %1 -- --migration-mode

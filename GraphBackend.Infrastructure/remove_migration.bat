@@ -1,0 +1,1 @@
+dotnet ef --startup-project ..\GraphBackend.Presentation\ migrations remove %1 -- --migration-mode

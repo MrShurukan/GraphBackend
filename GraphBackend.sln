@@ -7,6 +7,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		compose.yaml = compose.yaml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphBackend.Domain", "GraphBackend.Domain\GraphBackend.Domain.csproj", "{32255369-B692-4678-830D-688B06D19392}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphBackend.Infrastructure", "GraphBackend.Infrastructure\GraphBackend.Infrastructure.csproj", "{EDA2D7C1-525B-463A-B8EE-EAC7D2AA9EB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GraphBackend.Application", "GraphBackend.Application\GraphBackend.Application.csproj", "{FF2D83A1-01C0-4039-9778-AFCACE080D1F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,5 +23,17 @@ Global
 		{BA7B8059-FF5C-4330-90D8-C1D887AF55B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA7B8059-FF5C-4330-90D8-C1D887AF55B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA7B8059-FF5C-4330-90D8-C1D887AF55B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32255369-B692-4678-830D-688B06D19392}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32255369-B692-4678-830D-688B06D19392}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32255369-B692-4678-830D-688B06D19392}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32255369-B692-4678-830D-688B06D19392}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EDA2D7C1-525B-463A-B8EE-EAC7D2AA9EB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EDA2D7C1-525B-463A-B8EE-EAC7D2AA9EB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EDA2D7C1-525B-463A-B8EE-EAC7D2AA9EB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EDA2D7C1-525B-463A-B8EE-EAC7D2AA9EB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF2D83A1-01C0-4039-9778-AFCACE080D1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF2D83A1-01C0-4039-9778-AFCACE080D1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF2D83A1-01C0-4039-9778-AFCACE080D1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF2D83A1-01C0-4039-9778-AFCACE080D1F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
