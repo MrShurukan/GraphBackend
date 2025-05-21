@@ -13,8 +13,7 @@ namespace GraphBackend.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class UserController(
-    IMediator mediator)
+public class UserController(IMediator mediator)
     : ControllerBase
 {
     #if DEBUG

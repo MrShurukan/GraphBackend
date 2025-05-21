@@ -4,9 +4,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GraphBackend.Infrastructure;
 
-public class ApplicationContext(
-    DbContextOptions<ApplicationContext> options) 
+public class ApplicationContext(DbContextOptions<ApplicationContext> options) 
     : DbContext(options), IApplicationContext
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<HeroRecord> HeroRecords { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(assembly: typeof(ApplicationContext).Assembly);
+    }
 }
