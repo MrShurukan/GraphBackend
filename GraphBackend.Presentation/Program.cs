@@ -1,6 +1,7 @@
 using System.Text;
 using GraphBackend.Application;
 using GraphBackend.Application.Commands;
+using GraphBackend.Domain.Common;
 using GraphBackend.Extensions;
 using GraphBackend.Infrastructure;
 using Microsoft.AspNetCore.Authentication;
@@ -68,48 +69,27 @@ builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
     options.OpenApiVersion = Microsoft.OpenApi.OpenApiSpecVersion.OpenApi3_0;
-
 });
 
 builder.Services.AddSwaggerGen();
-// builder.Services.AddSwaggerGen(c =>
-// {
-//     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
-//
-//     // Добавляем схему безопасности JWT
-//     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-//     {
-//         Name = "Authorization",
-//         Type = SecuritySchemeType.Http,
-//         Scheme = "Bearer",
-//         BearerFormat = "JWT",
-//         In = ParameterLocation.Header,
-//         Description = "Введите токен в поле ниже.\n\nПример: eyJhbGciOiJIUzI1NiIsInR5cCI6..."
-//     });
-//
-//     // Добавляем требование безопасности для всех эндпоинтов
-//     c.AddSecurityRequirement(new OpenApiSecurityRequirement
-//     {
-//         {
-//             new OpenApiSecurityScheme
-//             {
-//                 Reference = new OpenApiReference
-//                 {
-//                     Id = "Bearer",
-//                     Type = ReferenceType.SecurityScheme
-//                 },
-//                 Scheme = "oauth2",
-//                 Name = "Bearer",
-//                 In = ParameterLocation.Header
-//             },
-//             Array.Empty<string>()
-//         }
-//     });
-//     
-//     c.SupportNonNullableReferenceTypes();
-// });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetService<ApplicationContext>()!;
+    var pendingMigrations = context.Database.GetPendingMigrations();
+    if (pendingMigrations.Any())
+    {
+        ConsoleWriter.WriteInfoLn("Принимаю миграции...");
+        context.Database.Migrate();
+        ConsoleWriter.WriteSuccessLn("Миграции приняты успешно");
+    }
+    else
+    {
+        ConsoleWriter.WriteInfoLn("Нет новых миграций");
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
