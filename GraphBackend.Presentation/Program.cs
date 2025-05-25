@@ -27,8 +27,9 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(
                 #if DEBUG
-                "http://localhost:5173"
+                "http://localhost:5173",
                 #endif
+                "https://graph.mrshurukan.ru"
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod();

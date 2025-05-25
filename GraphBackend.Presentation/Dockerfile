@@ -1,23 +1,25 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
-
+﻿# 1. Build stage
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["GraphBackend/GraphBackend.csproj", "GraphBackend/"]
-RUN dotnet restore "GraphBackend/GraphBackend.csproj"
-COPY . .
-WORKDIR "/src/GraphBackend"
-RUN dotnet build "GraphBackend.csproj" -c $BUILD_CONFIGURATION -o /app/build
-
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "GraphBackend.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
-
-FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "GraphBackend.dll"]
+
+# Копируем все проекты
+COPY ../GraphBackend.Domain/ ./GraphBackend.Domain/
+COPY ../GraphBackend.Application/ ./GraphBackend.Application/
+COPY ../GraphBackend.Infrastructure/ ./GraphBackend.Infrastructure/
+COPY ./ ./GraphBackend.Presentation/
+
+# Восстанавливаем зависимости
+WORKDIR /app/GraphBackend.Presentation
+RUN dotnet restore
+
+# Собираем проект
+RUN dotnet publish -c Release -o /out
+
+# 2. Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+WORKDIR /app
+COPY --from=build /out ./
+
+# Указываем порт (по желанию)
+EXPOSE 5233
+ENTRYPOINT ["dotnet", "GraphBackend.Presentation.dll"]
