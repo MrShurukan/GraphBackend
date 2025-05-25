@@ -7,7 +7,7 @@ using GraphBackend.Domain.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphBackend.Application.Commands;
+namespace GraphBackend.Application.CQRS.Commands;
 
 public record UploadCsvCommand(Stream CsvFileStream) : IRequest<int>;
 

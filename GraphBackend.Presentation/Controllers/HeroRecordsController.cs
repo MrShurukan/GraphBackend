@@ -1,4 +1,5 @@
-﻿using GraphBackend.Application.Commands;
+﻿using GraphBackend.Application.CQRS.Commands;
+using GraphBackend.Application.CQRS.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,5 +21,13 @@ public class HeroRecordsController(IMediator mediator) : ControllerBase
         var count = await mediator.Send(new UploadCsvCommand(stream), token);
 
         return Ok(new { Imported = count });
+    }
+    
+    [HttpPatch("RecordsByFilter")]
+    [Authorize]
+    public async Task<IActionResult> PatchRecordsByFilter(GetRecordsByFilterQuery query, CancellationToken token)
+    {
+        var result = await mediator.Send(query, token);
+        return Ok(result);
     }
 }

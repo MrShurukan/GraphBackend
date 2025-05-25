@@ -1,6 +1,7 @@
 using System.Text;
+using GraphBackend;
 using GraphBackend.Application;
-using GraphBackend.Application.Commands;
+using GraphBackend.Application.CQRS.Commands;
 using GraphBackend.Domain.Common;
 using GraphBackend.Extensions;
 using GraphBackend.Infrastructure;
@@ -18,6 +19,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+const string myAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: myAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins(
+                #if DEBUG
+                "http://localhost:5173"
+                #endif
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 builder.Configuration.CheckIfSectionExists("ConnectionStrings.DefaultConnection");
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
@@ -107,6 +123,10 @@ if (app.Environment.IsDevelopment())
         options.SwaggerEndpoint("/openapi/v1.json", "GraphBackend.Presentation");
     });
 }
+
+app.UseCors(myAllowSpecificOrigins);
+
+app.UseExceptionHandler(a => a.Run(ControllerExceptionHandler.Handle));
 
 app.UseAuthentication();
 app.UseAuthorization();

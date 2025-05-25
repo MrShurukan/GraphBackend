@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphBackend.Application.Commands;
+namespace GraphBackend.Application.CQRS.Commands;
 
 public record LoginCommand(string Email, string Password) : IRequest<string>;
 

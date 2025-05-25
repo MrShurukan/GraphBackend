@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using GraphBackend.Application.Commands;
+using GraphBackend.Application.CQRS.Commands;
+using GraphBackend.Application.CQRS.Queries;
 using GraphBackend.Domain.Models;
 using GraphBackend.Infrastructure;
 using MediatR;
@@ -45,6 +46,32 @@ public class UserController(IMediator mediator)
     {
         var result = await mediator.Send(command, token);
         return Ok(new { Token = result });
+    }
+    
+    [HttpPost("CreateUser")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> PostCreateUser(CreateUserCommand command, CancellationToken token)
+    {
+        var result = await mediator.Send(command, token);
+        return Ok(new { id = result });
+    }
+    
+    [HttpDelete("User")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteUser([FromQuery] int id, CancellationToken token)
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var command = new DeleteUserCommand(id, userId);
+        await mediator.Send(command, token);
+        return Ok();
+    }
+
+    [HttpPatch("UsersByFilter")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> PatchUsersByFilter(GetUsersByFilterQuery query, CancellationToken token)
+    {
+        var result = await mediator.Send(query, token);
+        return Ok(result);
     }
 
     [HttpGet("TestAuth")]
