@@ -12,6 +12,7 @@ public class HeroRecordsController(IMediator mediator) : ControllerBase
 {
     [HttpPost("UploadCsv")]
     [Authorize(Roles = "Admin")]
+    [RequestSizeLimit(1_000_000_000_000)]
     public async Task<IActionResult> PostLogin(IFormFile file, CancellationToken token)
     {
         if (file.Length == 0)
@@ -21,6 +22,14 @@ public class HeroRecordsController(IMediator mediator) : ControllerBase
         var count = await mediator.Send(new UploadCsvCommand(stream), token);
 
         return Ok(new { Imported = count });
+    }
+    
+    [HttpPost("Mark")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> PatchRecordsByFilter(CancellationToken token)
+    {
+        var result = await mediator.Send(new MarkHeroRecordsCommand(), token);
+        return Ok(result);
     }
     
     [HttpPatch("RecordsByFilter")]

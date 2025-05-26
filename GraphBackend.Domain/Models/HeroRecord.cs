@@ -31,6 +31,8 @@ public class HeroRecord : BaseEntity
     public string AuthorName { get; set; }
     // Подписчиков
     public int Subscribers { get; set; }
+    
+    public HeroRecordClassification Classification { get; set; }
 }
 
 public class HeroRecordDto
@@ -63,4 +65,6 @@ public class HeroRecordDto
     public string AuthorName { get; set; }
     // Подписчиков
     public int Subscribers { get; set; }
+    
+    public HeroRecordClassification Classification { get; set; }
 }

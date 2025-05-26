@@ -23,7 +23,8 @@ public class UploadCsvCommandHandler(
         {
             Delimiter = ";",
             HasHeaderRecord = true,
-            BadDataFound = null
+            BadDataFound = null,
+            MissingFieldFound = null
         };
         using var csv = new CsvReader(reader, config);
 
@@ -36,6 +37,7 @@ public class UploadCsvCommandHandler(
         
         while (await csv.ReadAsync())
         {
+            ConsoleWriter.WriteProgress(index, 50000);
             index++;
             var url = csv.GetField("ССЫЛКА НА ЗАПИСЬ")?.Trim();
             // ConsoleWriter.WriteInfoLn($"Читаю {index}");
@@ -52,17 +54,17 @@ public class UploadCsvCommandHandler(
             var record = new HeroRecord
             {
                 Url = url,
-                UrlWithOwner = csv.GetField("ССЫЛКА НА ЗАПИСЬ С УЧЁТОМ ВЛАДЕЛЬЦА"),
-                WallOwner = csv.GetField("ВЛАДЕЛЕЦ СТЕНЫ"),
-                PostAuthor = csv.GetField("АВТОР ЗАПИСИ"),
+                UrlWithOwner = csv.GetField("ССЫЛКА НА ЗАПИСЬ С УЧЁТОМ ВЛАДЕЛЬЦА") ?? "",
+                WallOwner = csv.GetField("ВЛАДЕЛЕЦ СТЕНЫ") ?? "",
+                PostAuthor = csv.GetField("АВТОР ЗАПИСИ") ?? "",
                 DateTime = DateTime.Parse(csv.GetField("ДАТА И ВРЕМЯ") ?? string.Empty).ToUniversalTime(),
-                Text = csv.GetField("ТЕКСТ ПОСТА"),
+                Text = csv.GetField("ТЕКСТ ПОСТА") ?? "",
                 Likes = int.TryParse(csv.GetField("ЛАЙКОВ"), out var likes) ? likes : 0,
                 Reposts = int.TryParse(csv.GetField("РЕПОСТОВ"), out var reposts) ? reposts : 0,
                 Comments = int.TryParse(csv.GetField("КОММЕНТАРИЕВ"), out var comments) ? comments : 0,
                 Views = int.TryParse(csv.GetField("ПРОСМОТРОВ"), out var views) ? views : 0,
                 CommentUrl = string.IsNullOrWhiteSpace(csv.GetField("ССЫЛКА НА КОММЕНТАРИЙ")) ? null : csv.GetField("ССЫЛКА НА КОММЕНТАРИЙ"),
-                AuthorName = csv.GetField("НАЗВАНИЕ АВТОРА"),
+                AuthorName = csv.GetField("НАЗВАНИЕ АВТОРА") ?? "",
                 Subscribers = int.TryParse(csv.GetField("ПОДПИСЧИКОВ"), out var subs) ? subs : 0
             };
 

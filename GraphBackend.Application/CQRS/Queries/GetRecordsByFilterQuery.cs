@@ -13,6 +13,7 @@ public record GetRecordsByFilterQuery(
     FilterDto<string?>? Text,
     FilterDto<string?>? CommentUrl,
     FilterDto<string?>? AuthorName,
+    FilterDto<string?>? Classification,
     
     FilterDto<DateTime?>? FromDateTime,
     FilterDto<DateTime?>? ToDateTime) : PaginatedRequest<HeroRecordDto>;
@@ -24,7 +25,14 @@ public class GetRecordsByFilterQueryHandler(
     {
         var filterManager = new FilterManager<HeroRecord>(context.HeroRecords);
 
+        HeroRecordClassification? classification = null; 
+        if (query.Classification?.Value is not null)
+        {
+            classification = (HeroRecordClassification)int.Parse(query.Classification.Value);
+        }
+        
         var finalQuery = filterManager
+            .AddQuery(query.Classification, x => x.Classification == classification)
             .ILike(query.Url, x => x.Url, LikeFlags.InTheMiddle)
             .ILike(query.UrlWithOwner, x => x.UrlWithOwner, LikeFlags.InTheMiddle)
             .ILike(query.WallOwner, x => x.WallOwner, LikeFlags.InTheMiddle)
