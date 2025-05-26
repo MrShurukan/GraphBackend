@@ -40,6 +40,14 @@ public class HeroRecordsController(IMediator mediator) : ControllerBase
         return Ok();
     }
     
+    [HttpGet("ClassificationCounts")]
+    [Authorize]
+    public async Task<IActionResult> GetClassificationCounts(CancellationToken token)
+    {
+        var result = await mediator.Send(new GetClassificationCountsQuery(), token);
+        return Ok(result);
+    }
+    
     [HttpPatch("RecordsByFilter")]
     [Authorize]
     public async Task<IActionResult> PatchRecordsByFilter(GetRecordsByFilterQuery query, CancellationToken token)
