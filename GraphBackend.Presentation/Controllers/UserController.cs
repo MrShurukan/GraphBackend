@@ -17,30 +17,6 @@ namespace GraphBackend.Controllers;
 public class UserController(IMediator mediator)
     : ControllerBase
 {
-    #if DEBUG
-    [HttpPost("CreateAdmin")]
-    public async Task<IActionResult> CreateAdmin([FromServices] ApplicationContext context, CancellationToken token)
-    {
-        if (await context.Users.AnyAsync(x => x.Role == Roles.Admin, token))
-        {
-            throw new Exception("Админ уже существует");
-        }
-
-        var password = BCrypt.Net.BCrypt.HashPassword("admin");
-        var user = new User
-        {
-            Email = "test@admin.com",
-            PasswordHash = password,
-            Role = Roles.Admin
-        };
-
-        context.Users.Add(user);
-        await context.SaveChangesAsync(token);
-        
-        return Ok();
-    }
-    #endif
-    
     [HttpPost("Login")]
     public async Task<IActionResult> PostLogin(LoginCommand command, CancellationToken token)
     {

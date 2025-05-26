@@ -3,6 +3,7 @@ using GraphBackend;
 using GraphBackend.Application;
 using GraphBackend.Application.CQRS.Commands;
 using GraphBackend.Domain.Common;
+using GraphBackend.Domain.Models;
 using GraphBackend.Extensions;
 using GraphBackend.Infrastructure;
 using Microsoft.AspNetCore.Authentication;
@@ -105,6 +106,22 @@ using (var scope = app.Services.CreateScope())
     else
     {
         ConsoleWriter.WriteInfoLn("Нет новых миграций");
+    }
+    
+    if (await context.Users.AllAsync(x => x.Role != Roles.Admin))
+    {
+        ConsoleWriter.WriteWarningLn("Нет ни единого администратора, создаю тестового");
+        
+        var password = BCrypt.Net.BCrypt.HashPassword("admin");
+        var user = new User
+        {
+            Email = "test@admin.com",
+            PasswordHash = password,
+            Role = Roles.Admin
+        };
+
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
     }
 }
 
