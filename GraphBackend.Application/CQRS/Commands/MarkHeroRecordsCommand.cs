@@ -19,47 +19,53 @@ public class MarkHeroRecordsCommandHandler(
 
         ConsoleWriter.WriteInfoLn($"Подсчитываю количество...");
         
-        var allRecordsWithHeroCount = recordsQueryable.Count();
+        var recordsToProcessCount = recordsQueryable.Count();
 
-        ConsoleWriter.WriteInfoLn($"Обрабатываю {allRecordsWithHeroCount} из {await context.HeroRecords.CountAsync(token)}");
+        ConsoleWriter.WriteInfoLn($"Обрабатываю {recordsToProcessCount} из {await context.HeroRecords.CountAsync(token)}");
         var unknownCategoryCount = 0;
+        var noHeroCount = 0;
 
         const int startingChunkPosition = 0;
         
         var classificationCounts = new Dictionary<HeroRecordClassification, int>();
         const int chunkSize = 1_000;
+        var lastId = 0;
         var globalIndex = startingChunkPosition * chunkSize;
-        var lastChunkNumber = (int)Math.Ceiling((double)allRecordsWithHeroCount / chunkSize);
-
-        for (var chunkNumber = startingChunkPosition; chunkNumber <= lastChunkNumber; chunkNumber++)
+        
+        while (true)
         {
-            var heroRecordChunk = recordsQueryable
-                .Skip(chunkNumber * chunkSize)
+            var heroRecordChunk = await recordsQueryable
+                .Where(x => x.Id > lastId)
                 .Take(chunkSize)
-                .ToList();
+                .ToListAsync(token);
             
             foreach (var heroRecord in heroRecordChunk)
             {
                 globalIndex++;
-                if (ProcessRecord(globalIndex, allRecordsWithHeroCount, heroRecord, classificationCounts) ==
-                    HeroRecordClassification.Unmarked)
-                    unknownCategoryCount += 1;
+                switch (ProcessRecord(globalIndex, recordsToProcessCount, heroRecord, classificationCounts))
+                {
+                    case HeroRecordClassification.Unmarked:
+                        unknownCategoryCount += 1;
+                        break;
+                    case HeroRecordClassification.NoHero:
+                        noHeroCount += 1;
+                        break;
+                }
             }
 
-            ConsoleWriter.WriteProgress(globalIndex, allRecordsWithHeroCount, "Сохраняю...");
+            ConsoleWriter.WriteProgress(globalIndex, recordsToProcessCount, "Сохраняю...");
+            if (heroRecordChunk.Count == 0)
+                break;
             await context.SaveChangesAsync(token);
+
+            lastId = heroRecordChunk.Last().Id;
             
             context.ChangeTracker.Clear();
         }
 
-        ConsoleWriter.WriteInfoLn("Отмечаю записи без 'герой'...");
-        var count = await context.HeroRecords
-            .Where(x => !EF.Functions.ILike(x.Text, "%геро%"))
-            .ExecuteUpdateAsync(x =>
-                x.SetProperty(z => z.Classification, HeroRecordClassification.NoHero), token);
-        ConsoleWriter.WriteSuccessLn($"Отмечено {count} записей");
-
-        return new MarkResults(globalIndex, count, unknownCategoryCount);
+        ConsoleWriter.WriteInfoLn("");
+        ConsoleWriter.WriteSuccessLn("Готово!");
+        return new MarkResults(globalIndex, noHeroCount, unknownCategoryCount);
     }
 
     private HeroRecordClassification ProcessRecord(int index, int totalRecordsCount, HeroRecord record,
@@ -86,6 +92,7 @@ public class MarkHeroRecordsCommandHandler(
             }
         }
 
+        record.Classification = sentences.Length > 0 ? HeroRecordClassification.Unmarked : HeroRecordClassification.NoHero;
         return record.Classification;
     }
 

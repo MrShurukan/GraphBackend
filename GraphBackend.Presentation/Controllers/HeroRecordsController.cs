@@ -26,10 +26,18 @@ public class HeroRecordsController(IMediator mediator) : ControllerBase
     
     [HttpPost("Mark")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> PatchRecordsByFilter(CancellationToken token)
+    public async Task<IActionResult> PostMarkRecords(CancellationToken token)
     {
         var result = await mediator.Send(new MarkHeroRecordsCommand(), token);
         return Ok(result);
+    }
+    
+    [HttpPost("ResetMark")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> PostResetMarkRecords(CancellationToken token)
+    {
+        await mediator.Send(new ResetMarkRecordsCommand(), token);
+        return Ok();
     }
     
     [HttpPatch("RecordsByFilter")]
