@@ -3,10 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 
 # Копируем все проекты
-COPY ../GraphBackend.Domain/ ./GraphBackend.Domain/
-COPY ../GraphBackend.Application/ ./GraphBackend.Application/
-COPY ../GraphBackend.Infrastructure/ ./GraphBackend.Infrastructure/
-COPY ./ ./GraphBackend.Presentation/
+COPY . .
 
 # Восстанавливаем зависимости
 WORKDIR /app/GraphBackend.Presentation
