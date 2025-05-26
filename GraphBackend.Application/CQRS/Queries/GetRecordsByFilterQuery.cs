@@ -40,8 +40,8 @@ public class GetRecordsByFilterQueryHandler(
             .ILike(query.Text, x => x.Text, LikeFlags.InTheMiddle)
             .ILike(query.CommentUrl, x => x.CommentUrl, LikeFlags.InTheMiddle)
             .ILike(query.AuthorName, x => x.AuthorName, LikeFlags.InTheMiddle)
-            .AddQuery(query.FromDateTime, x => x.DateTime >= query.FromDateTime!.Value)
-            .AddQuery(query.ToDateTime, x => x.DateTime <= query.ToDateTime!.Value)
+            .AddQuery(query.FromDateTime, x => x.DateTime >= query.FromDateTime!.Value.Value!.ToUniversalTime())
+            .AddQuery(query.ToDateTime, x => x.DateTime <= query.ToDateTime!.Value!.Value.ToUniversalTime())
             .GetFinalQueryable()
             .OrderByDescending(o => o.DateTime);
         
