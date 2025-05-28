@@ -13,12 +13,23 @@ public class GetClassificationCountsQueryHandler(
     public async Task<Dictionary<HeroRecordClassification, int>> Handle(GetClassificationCountsQuery request, CancellationToken token)
     {
         var finalQuery = GetRecordsByFilterQueryHandler.GetFilterFromQuery(request.FilterQuery, context.HeroRecords);
-        var counts = new Dictionary<HeroRecordClassification, int>();
-        foreach (var heroRecordClassification in Enum.GetValues<HeroRecordClassification>().Where(x => x != HeroRecordClassification.NoHero))
-        {
-            counts[heroRecordClassification] =
-                await finalQuery.CountAsync(x => x.Classification == heroRecordClassification, token);
-        }
+        var groupedCounts = await finalQuery
+            .GroupBy(x => x.Classification)
+            .Select(g => new
+            {
+                Classification = g.Key,
+                Count = g.Count()
+            })
+            .ToListAsync(token);
+        
+        var allClassifications = Enum.GetValues<HeroRecordClassification>()
+            .Where(c => c != HeroRecordClassification.NoHero);
+
+        var counts = allClassifications
+            .ToDictionary(
+                c => c,
+                c => groupedCounts.FirstOrDefault(g => g.Classification == c)?.Count ?? 0
+            );
 
         return counts;
     }

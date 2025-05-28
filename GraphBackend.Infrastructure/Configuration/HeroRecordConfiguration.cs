@@ -9,5 +9,6 @@ public class HeroRecordConfiguration : IEntityTypeConfiguration<HeroRecord>
     public void Configure(EntityTypeBuilder<HeroRecord> builder)
     {
         builder.HasIndex(x => x.Url).IsUnique();
+        builder.HasIndex(x => x.Subscribers);
     }
 }

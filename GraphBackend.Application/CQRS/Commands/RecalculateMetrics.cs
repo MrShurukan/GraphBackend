@@ -11,10 +11,13 @@ public class RecalculateMetricsCommandHandler(
 {
     public async Task Handle(RecalculateMetricsCommand request, CancellationToken token)
     {
-        await context.HeroRecords
-            .Where(x => x.Subscribers != 0)
-            .ExecuteUpdateAsync(x => x
-                    .SetProperty(z => z.ER, z => ((z.Likes + z.Comments + z.Reposts) / (float)z.Subscribers) * 100)
-                    .SetProperty(z => z.VR, z => (z.Views / (float)z.Subscribers) * 100), token);
+        await context.Database.ExecuteSqlRawAsync(
+            """
+            UPDATE hero_records
+            SET
+                er = ((likes + comments + reposts) * 100.0) / NULLIF(CAST(subscribers AS FLOAT), 0),
+                vr = (views * 100.0) / NULLIF(CAST(subscribers AS FLOAT), 0)
+            WHERE subscribers != 0
+            """, token);
     }
 }
