@@ -33,6 +33,10 @@ public class HeroRecord : BaseEntity
     public int Subscribers { get; set; }
     
     public HeroRecordClassification Classification { get; set; }
+    // Коэффициент вовлеченности
+    public float ER { get; set; }
+    // Коэффициент просмотров
+    public float VR { get; set; }
 }
 
 public class HeroRecordDto
@@ -67,4 +71,8 @@ public class HeroRecordDto
     public int Subscribers { get; set; }
     
     public HeroRecordClassification Classification { get; set; }
+    // Коэффициент вовлеченности
+    public float ER { get; set; }
+    // Коэффициент просмотров
+    public float VR { get; set; }
 }

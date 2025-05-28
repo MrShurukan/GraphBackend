@@ -40,11 +40,27 @@ public class HeroRecordsController(IMediator mediator) : ControllerBase
         return Ok();
     }
     
-    [HttpGet("ClassificationCounts")]
-    [Authorize]
-    public async Task<IActionResult> GetClassificationCounts(CancellationToken token)
+    [HttpPost("RecalculateMetrics")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> PostRecalculateMetrics(CancellationToken token)
     {
-        var result = await mediator.Send(new GetClassificationCountsQuery(), token);
+        await mediator.Send(new RecalculateMetricsCommand(), token);
+        return Ok();
+    }
+    
+    [HttpPatch("ClassificationCounts")]
+    [Authorize]
+    public async Task<IActionResult> GetClassificationCounts([FromBody] GetRecordsByFilterQuery query, CancellationToken token)
+    {
+        var result = await mediator.Send(new GetClassificationCountsQuery(query), token);
+        return Ok(result);
+    }
+    
+    [HttpPatch("GetMetrics")]
+    [Authorize]
+    public async Task<IActionResult> GetMetrics([FromBody] GetRecordsByFilterQuery query, CancellationToken token)
+    {
+        var result = await mediator.Send(new GetMetricsQuery(query), token);
         return Ok(result);
     }
     

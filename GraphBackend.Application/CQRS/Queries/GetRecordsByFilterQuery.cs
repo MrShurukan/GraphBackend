@@ -23,7 +23,19 @@ public class GetRecordsByFilterQueryHandler(
 {
     public async Task<PaginatedList<HeroRecordDto>> Handle(GetRecordsByFilterQuery query, CancellationToken cancellationToken)
     {
-        var filterManager = new FilterManager<HeroRecord>(context.HeroRecords);
+        var finalQuery = GetFilterFromQuery(query, context.HeroRecords)
+            .OrderBy(o => o.DateTime);
+        
+        var paginatedList =
+            await finalQuery.PaginatedListEnumerableAsync<HeroRecord, HeroRecordDto>(query.PageNumber, query.PageSize);
+
+        return paginatedList;
+    }
+
+    public static IQueryable<HeroRecord> GetFilterFromQuery(GetRecordsByFilterQuery query,
+        IQueryable<HeroRecord> heroRecords)
+    {
+        var filterManager = new FilterManager<HeroRecord>(heroRecords);
 
         HeroRecordClassification? classification = null; 
         if (query.Classification?.Value is not null)
@@ -42,12 +54,8 @@ public class GetRecordsByFilterQueryHandler(
             .ILike(query.AuthorName, x => x.AuthorName, LikeFlags.InTheMiddle)
             .AddQuery(query.FromDateTime, x => x.DateTime >= query.FromDateTime!.Value.Value!.ToUniversalTime())
             .AddQuery(query.ToDateTime, x => x.DateTime <= query.ToDateTime!.Value!.Value.ToUniversalTime())
-            .GetFinalQueryable()
-            .OrderByDescending(o => o.DateTime);
-        
-        var paginatedList =
-            await finalQuery.PaginatedListEnumerableAsync<HeroRecord, HeroRecordDto>(query.PageNumber, query.PageSize);
+            .GetFinalQueryable();
 
-        return paginatedList;
+        return finalQuery;
     }
 }
