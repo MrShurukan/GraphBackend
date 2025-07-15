@@ -5,3 +5,5 @@ riderModule.iml
 /_ReSharper.Caches/
 appsettings.json
 docker-compose.yaml
+
+.idea/.idea.GraphBackend/.idea/dataSources.xml
