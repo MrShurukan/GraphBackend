@@ -83,12 +83,26 @@ public class MarkHeroRecordsCommandHandler(
         foreach (var sentence in sentences)
         {
             ProcessSentence(sentence, classificationCounts);
-            var maxScore = classificationCounts.MaxBy(x => x.Value);
+            ProcessSentencePersonal(sentence, classificationCounts);
+            var maxScore = 
+                // Понижение приоритета Personal
+                classificationCounts
+                    .Where(x => x.Key != HeroRecordClassification.Personal)
+                    .MaxBy(x => x.Value);
+
+            var scorePersonal = classificationCounts[HeroRecordClassification.Personal];
+            
             // Если есть ненулевое значение - мы смогли определить
-            if (maxScore.Value > 0)
+            if (maxScore.Value > 0 && maxScore.Value >= scorePersonal)
             {
                 record.Classification = maxScore.Key;
                 return maxScore.Key;
+            }
+
+            if (scorePersonal > 0)
+            {
+                record.Classification = HeroRecordClassification.Personal;
+                return HeroRecordClassification.Personal;
             }
         }
 
@@ -125,6 +139,30 @@ public class MarkHeroRecordsCommandHandler(
                 }
             }
         }
+    }
+
+    private static void ProcessSentencePersonal(string sentence, Dictionary<HeroRecordClassification, int> classificationCounts)
+    {
+        var words = sentence.Split(' ').ToList();
+        var heroWordIndex = words.FindIndex(x => x.Contains("геро", StringComparison.InvariantCultureIgnoreCase));
+
+        if (heroWordIndex == -1) return;
+        
+        var previousWord = heroWordIndex > 0 ? words[heroWordIndex - 1] : null;
+        var nextWord = heroWordIndex < words.Count - 1 ? words[heroWordIndex + 1] : null;
+
+        if (IsPersonalWord(previousWord) || IsPersonalWord(nextWord))
+        {
+            classificationCounts[HeroRecordClassification.Personal] += 1;
+        }
+    }
+
+    private static bool IsPersonalWord(string? word)
+    {
+        if (word is null) return false;
+        
+        word = word.ToLowerInvariant().Trim();
+        return word is "мой" or "моя" or "мои" or "моё" or "наш" or "сын" or "дочь" or "муж" or "брат" or "отец" or "мать";
     }
 
     private void InitDictionary(Dictionary<HeroRecordClassification, int> dict)
