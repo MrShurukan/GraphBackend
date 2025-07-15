@@ -4,6 +4,7 @@ using GraphBackend.Application.CQRS.Commands;
 using GraphBackend.Application.CQRS.Queries;
 using GraphBackend.Domain.Models;
 using GraphBackend.Infrastructure;
+using GraphBackend.Infrastructure.Services;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;

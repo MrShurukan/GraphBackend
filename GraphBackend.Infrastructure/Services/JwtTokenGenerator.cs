@@ -3,10 +3,11 @@ using System.Security.Claims;
 using System.Text;
 using GraphBackend.Application;
 using GraphBackend.Domain.Models;
+using GraphBackend.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace GraphBackend.Infrastructure;
+namespace GraphBackend.Infrastructure.Services;
 
 public class JwtTokenGenerator(
     IOptions<JwtSettings> options) 

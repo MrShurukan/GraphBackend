@@ -2,7 +2,7 @@
 using GraphBackend.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace GraphBackend.Infrastructure;
+namespace GraphBackend.Infrastructure.Services;
 
 public class ApplicationContext(DbContextOptions<ApplicationContext> options) 
     : DbContext(options), IApplicationContext

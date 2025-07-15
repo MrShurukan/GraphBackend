@@ -6,6 +6,8 @@ using GraphBackend.Domain.Common;
 using GraphBackend.Domain.Models;
 using GraphBackend.Extensions;
 using GraphBackend.Infrastructure;
+using GraphBackend.Infrastructure.Services;
+using GraphBackend.Infrastructure.Settings;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http.Features;
@@ -18,7 +20,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services
+    .AddControllers()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.ContractResolver = 
+            new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
+    });
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 builder.Services.Configure<FormOptions>(x =>
@@ -67,6 +75,7 @@ builder.Services.AddMediatR(options =>
 });
 
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("VkSettings"));
 builder.Services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

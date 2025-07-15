@@ -1,4 +1,4 @@
-﻿namespace GraphBackend.Infrastructure;
+﻿namespace GraphBackend.Infrastructure.Settings;
 
 public class JwtSettings
 {
