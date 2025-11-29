@@ -51,22 +51,22 @@ public class UploadCsvCommandHandler(
                 continue;
             }
 
-            var record = new HeroRecord
-            {
-                Url = url,
-                UrlWithOwner = csv.GetField("ССЫЛКА НА ЗАПИСЬ С УЧЁТОМ ВЛАДЕЛЬЦА") ?? "",
-                WallOwner = csv.GetField("ВЛАДЕЛЕЦ СТЕНЫ") ?? "",
-                PostAuthor = csv.GetField("АВТОР ЗАПИСИ") ?? "",
-                DateTime = DateTime.Parse(csv.GetField("ДАТА И ВРЕМЯ") ?? string.Empty).ToUniversalTime(),
-                Text = csv.GetField("ТЕКСТ ПОСТА") ?? "",
-                Likes = int.TryParse(csv.GetField("ЛАЙКОВ"), out var likes) ? likes : 0,
-                Reposts = int.TryParse(csv.GetField("РЕПОСТОВ"), out var reposts) ? reposts : 0,
-                Comments = int.TryParse(csv.GetField("КОММЕНТАРИЕВ"), out var comments) ? comments : 0,
-                Views = int.TryParse(csv.GetField("ПРОСМОТРОВ"), out var views) ? views : 0,
-                CommentUrl = string.IsNullOrWhiteSpace(csv.GetField("ССЫЛКА НА КОММЕНТАРИЙ")) ? null : csv.GetField("ССЫЛКА НА КОММЕНТАРИЙ"),
-                AuthorName = csv.GetField("НАЗВАНИЕ АВТОРА") ?? "",
-                Subscribers = int.TryParse(csv.GetField("ПОДПИСЧИКОВ"), out var subs) ? subs : 0
-            };
+            var record = new HeroRecord(
+                url,
+                csv.GetField("ССЫЛКА НА ЗАПИСЬ С УЧЁТОМ ВЛАДЕЛЬЦА") ?? "",
+                csv.GetField("ВЛАДЕЛЕЦ СТЕНЫ") ?? "",
+                csv.GetField("АВТОР ЗАПИСИ") ?? "",
+                DateTime.Parse(csv.GetField("ДАТА И ВРЕМЯ") ?? string.Empty).ToUniversalTime(),
+                csv.GetField("ТЕКСТ ПОСТА") ?? "",
+                int.TryParse(csv.GetField("ЛАЙКОВ"), out var likes) ? likes : 0,
+                int.TryParse(csv.GetField("РЕПОСТОВ"), out var reposts) ? reposts : 0,
+                int.TryParse(csv.GetField("КОММЕНТАРИЕВ"), out var comments) ? comments : 0,
+                int.TryParse(csv.GetField("ПРОСМОТРОВ"), out var views) ? views : 0,
+                string.IsNullOrWhiteSpace(csv.GetField("ССЫЛКА НА КОММЕНТАРИЙ")) ? null : csv.GetField("ССЫЛКА НА КОММЕНТАРИЙ"),
+                csv.GetField("НАЗВАНИЕ АВТОРА") ?? "",
+                int.TryParse(csv.GetField("ПОДПИСЧИКОВ"), out var subs) ? subs : 0,
+                HeroRecordClassification.Unmarked
+            );
 
             context.HeroRecords.Add(record);
             addedCount++;

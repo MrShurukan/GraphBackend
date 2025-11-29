@@ -2,6 +2,7 @@ using System.Text;
 using GraphBackend;
 using GraphBackend.Application;
 using GraphBackend.Application.CQRS.Commands;
+using GraphBackend.Application.Services;
 using GraphBackend.Domain.Common;
 using GraphBackend.Domain.Models;
 using GraphBackend.Extensions;
@@ -77,6 +78,8 @@ builder.Services.AddMediatR(options =>
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.Configure<VkSettings>(builder.Configuration.GetSection("VkSettings"));
 builder.Services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+
+builder.Services.AddSingleton<IVkClient, VkClient>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

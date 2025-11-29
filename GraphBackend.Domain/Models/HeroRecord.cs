@@ -6,6 +6,30 @@ public class HeroRecord : BaseEntity
 {
     // Ссылка на запись
     // (УНИКАЛЬНЫЙ ИНДЕКС)
+    public HeroRecord(string url, string urlWithOwner, string wallOwner, string postAuthor, DateTime dateTime, string text, int likes, int reposts, int comments, int views, string? commentUrl, string authorName, int subscribers, HeroRecordClassification classification)
+    {
+        Url = url;
+        UrlWithOwner = urlWithOwner;
+        WallOwner = wallOwner;
+        PostAuthor = postAuthor;
+        DateTime = dateTime;
+        Text = text;
+        Likes = likes;
+        Reposts = reposts;
+        Comments = comments;
+        Views = views;
+        CommentUrl = commentUrl;
+        AuthorName = authorName;
+        Subscribers = subscribers;
+        Classification = classification;
+
+        if (subscribers != 0)
+        {
+            ER = (likes + comments + reposts) * 100.0f / subscribers;
+            VR = views * 100.0f / subscribers;
+        }
+    }
+
     public string Url { get; set; }
     // Ссылка на запись с учётом владельца
     public string UrlWithOwner { get; set; }
